@@ -25,9 +25,11 @@ function App() {
       scale: 0.8,
     });
     //
-    setInterval(() => {
-      detect(net);
-    }, 100);
+
+      setInterval(() => {
+        detect(net);
+      }, 2000);
+    
   };
 
   const detect = async (net) => {
@@ -47,7 +49,29 @@ function App() {
 
       // Make Detections
       const pose = await net.estimateSinglePose(video);
-      console.log(pose);
+      
+     const left =[];
+     const right =[];
+
+      left.push(pose.keypoints[11].position,pose.keypoints[13].position,pose.keypoints[15].position)
+      right.push(pose.keypoints[12].position,pose.keypoints[14].position,pose.keypoints[16].position)
+      console.log('left',left);
+      console.log('right',right);
+// !============================= left knee =================
+      let A = {x:left[0].x, y:left[0].y}, B = {x:left[1].x, y:left[1].y}, C = {x:left[2].x, y:left[2].y}
+        let AB = Math.sqrt(Math.pow(B.x-A.x,2)+ Math.pow(B.y-A.y,2));    
+        let BC = Math.sqrt(Math.pow(B.x-C.x,2)+ Math.pow(B.y-C.y,2)); 
+        let AC = Math.sqrt(Math.pow(C.x-A.x,2)+ Math.pow(C.y-A.y,2));
+        console.log('Left Knee radians',Math.acos((BC*BC+AB*AB-AC*AC)/(2*BC*AB))); 
+        console.log('Left Knee degrees',(Math.acos((BC*BC+AB*AB-AC*AC)/(2*BC*AB))*180)/ Math.PI); 
+
+// !======================== right knee ====================
+let D = {x:left[0].x, y:left[0].y}, E = {x:left[1].x, y:left[1].y}, F = {x:left[2].x, y:left[2].y}
+let DE = Math.sqrt(Math.pow(E.x-D.x,2)+ Math.pow(E.y-D.y,2));    
+let EF = Math.sqrt(Math.pow(E.x-F.x,2)+ Math.pow(E.y-F.y,2)); 
+let DF = Math.sqrt(Math.pow(F.x-D.x,2)+ Math.pow(F.y-D.y,2));
+console.log('Right Knee radians',Math.acos((EF*EF+DE*DE-DF*DF)/(2*EF*DE))); 
+console.log('Right Knee degrees',(Math.acos((EF*EF+DE*DE-DF*DF)/(2*EF*DE))*180)/ Math.PI); 
 
       drawCanvas(pose, video, videoWidth, videoHeight, canvasRef);
     }
